@@ -514,7 +514,7 @@ bool AD5933::frequencySweep(int real[], int imag[], int n) {
  * @param n Length of the array (or the number of discrete measurements)
  * @return Success or failure
  */
-bool AD5933::calibrate(double gain[], int phase[], int ref, int n) {
+bool AD5933::calibrate(double gain[], float phase[], int ref, int n) {
     // We need arrays to hold the real and imaginary values temporarily
     int *real = new int[n];
     int *imag = new int[n];
@@ -530,6 +530,15 @@ bool AD5933::calibrate(double gain[], int phase[], int ref, int n) {
     for (int i = 0; i < n; i++) {
         gain[i] = (double)(1.0/ref)/sqrt(pow(real[i], 2) + pow(imag[i], 2));
         // TODO: phase
+        ///////////////////////mie 20230305
+        //Serial.print("real[i] = ");
+        //Serial.println(real[i]);
+        //Serial.print("imag[i] = ");
+        //Serial.println(imag[i]);
+        phase[i] = atan2(imag[i], real[i]);
+        //Serial.print("phase[i] = ");
+        //Serial.println(phase[i]);
+        ////////////////////////////////////
     }
 
     delete [] real;
@@ -549,7 +558,7 @@ bool AD5933::calibrate(double gain[], int phase[], int ref, int n) {
  * @param n Length of the array (or the number of discrete measurements)
  * @return Success or failure
  */
-bool AD5933::calibrate(double gain[], int phase[], int real[], int imag[],
+bool AD5933::calibrate(double gain[], float phase[], int real[], int imag[],
                        int ref, int n) {
     // Perform the frequency sweep
     if (!frequencySweep(real, imag, n)) {
